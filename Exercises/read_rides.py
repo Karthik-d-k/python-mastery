@@ -3,16 +3,20 @@ import tracemalloc
 import typing
 
 
-def memory_usage(f):
+def print_memory_usage(func):
     """
-    Print memeory usage of a function `f`
+    Decorator for printing memeory usage of a function `func`
     """
-    tracemalloc.start()
-    _rows = f("../Data/ctabus.csv")
-    current, peak = map(lambda x: x / 10**6, tracemalloc.get_traced_memory())
-    print(f"Memory Usage of [{f.__name__}]:\n{current = } MB\n{peak = } MB")
+    def wrapper(*args, **kwargs):
+        tracemalloc.start()
+        _rows = func(*args, **kwargs)
+        current, peak = map(lambda x: x / 10**6, tracemalloc.get_traced_memory())
+        print(f"Memory Usage of [{func.__name__}]:\n{current = } MB\n{peak = } MB")
+
+    return wrapper
 
 
+@print_memory_usage
 def read_rides_as_tuple(filename):
     """
     Read the bus ride data as a list of tuples
@@ -30,7 +34,7 @@ def read_rides_as_tuple(filename):
             records.append(record)
     return records
 
-
+@print_memory_usage
 def read_rides_as_dict(filename):
     """
     Read the bus ride data as a list of dicts
@@ -61,7 +65,7 @@ class Ride:
         self.daytype = daytype
         self.rides = rides
 
-
+@print_memory_usage
 def read_rides_as_class(filename):
     """
     Read the bus ride data as a list of class intances
@@ -86,7 +90,7 @@ class NamedRide(typing.NamedTuple):
     daytype: str
     rides: int
 
-
+@print_memory_usage
 def read_rides_as_named_tuple(filename):
     """
     Read the bus ride data as a list of named tuples
@@ -114,7 +118,7 @@ class RideSlot:
         self.daytype = daytype
         self.rides = rides
 
-
+@print_memory_usage
 def read_rides_as_class_with_slots(filename):
     """
     Read the bus ride data as a list of class intances with slots
@@ -134,14 +138,15 @@ def read_rides_as_class_with_slots(filename):
 
 
 if __name__ == "__main__":
+    filename = "../Data/ctabus.csv"
     print("-" * 50)
-    memory_usage(read_rides_as_tuple)
+    read_rides_as_tuple(filename)
     print("-" * 50)
-    memory_usage(read_rides_as_dict)
+    read_rides_as_dict(filename)
     print("-" * 50)
-    memory_usage(read_rides_as_class)
+    read_rides_as_class(filename)
     print("-" * 50)
-    memory_usage(read_rides_as_named_tuple)
+    read_rides_as_named_tuple(filename)
     print("-" * 50)
-    memory_usage(read_rides_as_class_with_slots)
+    read_rides_as_class_with_slots(filename)
     print("-" * 50)
