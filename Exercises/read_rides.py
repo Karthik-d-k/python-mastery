@@ -9,9 +9,11 @@ def print_memory_usage(func):
     """
     def wrapper(*args, **kwargs):
         tracemalloc.start()
-        _rows = func(*args, **kwargs)
+        rows = func(*args, **kwargs)
         current, peak = map(lambda x: x / 10**6, tracemalloc.get_traced_memory())
         print(f"Memory Usage of [{func.__name__}]:\n{current = } MB\n{peak = } MB")
+
+        return rows
 
     return wrapper
 
